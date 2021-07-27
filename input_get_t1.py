@@ -44,11 +44,11 @@ sublist['subject.label'].isin(audit_subs['SID'])
 
 
 ####put all steps together by indexing booleans
-#get intersection of INDDIDs in sublist that are also in audit 
+#get intersection of INDDIDs in sublist that are also in audit
 HUP6qcList=sublist[sublist['subject.label'].isin(audit_subs['SID'])].reset_index(drop=True)
 
 #will get ~ 2x b/c multiple sessions in sublist - verify with count of unique values
-##A set doesn't store duplicate objects. 
+##A set doesn't store duplicate objects.
 ##Even if an object is added more than once inside the curly brackets, only one copy is held in the set object.
 
 #u_set=set(HUP6qcList['subject.label'])
@@ -67,4 +67,3 @@ QCboth['Path'].apply(lambda x: '/'.split(x),axis=1)
 
 proj_log['sess_merge'] = proj_log[['subject.label','session.label']].apply(lambda x: '_'.join(x),axis = 1)
 HUP6qcList
-
