@@ -1,0 +1,37 @@
+---
+title: "fw_prepruns"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library("tidyverse")
+library("flextable")
+library("ggplot2")
+library("dplyr")
+
+```
+
+```{r}
+task_dems=read.csv("/Users/burkesar/research_projects/hcp/eprime/formatted_txts/gmb_tableOnedata.csv")
+str(task_dems)
+select_data <- task_dems[!is.na(task_dems$VisitNumber), ]
+miss_dems <- task_dems[is.na(task_dems$VisitNumber), ]
+```
+
+```{r}
+select_data <- select_data %>% mutate_if(is.character, as.factor) %>% mutate_at("ID", as.factor)
+
+select_data$Sex <- factor(select_data$Sex)
+levels(select_data$Sex)
+levels(select_data$ID)
+levels(select_data$Mutation)
+
+```
+
+```{r}
+listVars = c("Sex","Education")
+
+tableone::CreateTableOne(data = select_data, vars = listVars, strata = "Mutation", factorVars = c("Sex"), testExact=T, testNonNormal = "kruskal.test") %>% print(nonnormal = T, testApprox="chisq.test", printToggle=F, contDigits = 1, na.print = "") %>% as.data.frame() %>% mutate(" " = c("n", "Sex = Male (%)","Education (years)")) %>% dplyr::select(" ", everything(), -test) %>% flextable::regulartable() %>% flextable::theme_booktabs() %>% font(fontname = "serif", part = "all") %>% autofit()
+```
