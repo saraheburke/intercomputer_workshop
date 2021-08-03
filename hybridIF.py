@@ -43,12 +43,12 @@ for s in range(len(subs)):
     yy=fx.pop()
     print(yy.info['BIDS']['Filename'])
     yz=yy.get('info',{})
-    print(yy)
+    print(yz.keys())
     if "IntendedFor" in yy.info:
-        yz['IntendedFor'].append({'testno'})
+        yz['IntendedFor'].append('testno')
         #then update info:
     else:
-        yz.update({'IntendedFor':'testpos'})
+        yz.update({'IntendedFor':['testpos']})
 
 
 
