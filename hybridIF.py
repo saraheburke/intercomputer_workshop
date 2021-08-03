@@ -36,29 +36,29 @@ for s in range(len(subs)):
     for acq in acqs:
         acq=acq.reload()
         for file in acq.files:
+            print(file.info)
             if file.type=='nifti' and file.info['PhaseEncodingDirection']=='j-' and "BIDS" in file.info.keys():
                 fullfiles.append(file)
-                #print(file.info['BIDS']['Filename'])
                 fx=sorted(fullfiles, key=lambda i:i['info']['BIDS']['Filename'])
     yy=fx.pop()
     print(yy.info['BIDS']['Filename'])
     yz=yy.get('info',{})
-    print(yz.keys())
     if "IntendedFor" in yy.info:
         yz['IntendedFor'].append('testno')
-        #then update info:
     else:
         yz.update({'IntendedFor':['testpos']})
+    yy.update_info(yz)
+    
+   
 
+filecheck = 'pennftdcenter/' + project + '/' + subs[s] + '/' + sesslist[s] 
+session=fw.lookup(filecheck)
+acqs=[a for a in session.acquisitions() if "SpinEchoFieldMap" in a.label]
+for acq in acqs:
+        acq=acq.reload()
+        for file in acq.files:
+            print(file)
 
-
- file_info = file_.get('info',{})
-         file_info.update({
-            'BIDS':{
-                <your_data>
-            })
-        file_.update_info(file_info)    
-         
 
         for f,g in zip(files_json,files_json_fullpaths):
             temp = re.findall(r'\d+', f)
