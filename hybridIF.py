@@ -20,6 +20,7 @@ fw=flywheel.Client()
 
 #bidsdir = '/project/ftdc_hcp/fmriBids/test06'
 #files = os.listdir(bidsdir)
+project='HCPMultiCenter'
 
 df = {"INDDID":["070001","070001"], "Session":["MR1","MR2"]}
 df = pd.DataFrame(df)
@@ -27,35 +28,37 @@ df = pd.DataFrame(df)
 subs = df["INDDID"].to_list()
 sesslist = df["Session"].to_list()
 
-for ses in sesslist:
-    runs = [] # variable to store list of runs available for subj in this session
-    # json file names
-    
-    fullfiles=[]
-    sessPath='pennftdcenter/' + project + '/' + subs[0] + '/' + sesslist[0]
+fullfiles=[]
+for s in range(len(subs)):     
+    sessPath='pennftdcenter/' + project + '/' + subs[s] + '/' + sesslist[s]
     session=fw.lookup(sessPath)
     acqs=[a for a in session.acquisitions() if "SpinEchoFieldMap" in a.label]
     for acq in acqs:
         acq=acq.reload()
         for file in acq.files:
-            if file.type=='nifti' and "BIDS" in file.info.keys():
-                print(file['info']['BIDS']['Filename'])
-                fullfiles.append(file['info']['BIDS']['Filename'])
-                #fullfiles.sort()
-                #xx=sorted(fullfiles)
-                xx.pop()
+            if file.type=='nifti' and file.info['PhaseEncodingDirection']=='j-' and "BIDS" in file.info.keys():
+                fullfiles.append(file)
+                #print(file.info['BIDS']['Filename'])
+                fx=sorted(fullfiles, key=lambda i:i['info']['BIDS']['Filename'])
+    yy=fx.pop()
+    print(yy.info['BIDS']['Filename'])
+    yz=yy.get('info',{})
+    print(yy)
+    if "IntendedFor" in yy.info:
+        yz['IntendedFor'].append({'testno'})
+        #then update info:
+    else:
+        yz.update({'IntendedFor':'testpos'})
 
-                     
-                tmp=file.get('info',{})
-            
-            
-            
-            for f in files_json:
-                temp = re.findall(r'\d+', f)
-                runs.append(int(temp[-1]))
 
-        # sort to get largest index among available runs
-        runs.sort()
+
+ file_info = file_.get('info',{})
+         file_info.update({
+            'BIDS':{
+                <your_data>
+            })
+        file_.update_info(file_info)    
+         
 
         for f,g in zip(files_json,files_json_fullpaths):
             temp = re.findall(r'\d+', f)
