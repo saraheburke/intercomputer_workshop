@@ -26,40 +26,40 @@ df = pd.DataFrame(df)
 subs = df["INDDID"].to_list()
 sesslist = df["Session"].to_list()
 
-fullfiles=[]
 for s in range(len(subs)):   
     sessPath='pennftdcenter/' + project + '/' + subs[s] + '/' + sesslist[s]
     session=fw.lookup(sessPath)
+    apfiles=[]
+    pafiles=[]
     for acq in session.acquisitions():
         if "SpinEchoFieldMap" in acq.label:
             acq=acq.reload()
             for file in acq.files:
                 if file.type=="nifti" and file.info['PhaseEncodingDirection']=='j-' and "BIDS" in file.info.keys():
-                    fullfiles.append(file)
-                    fx=sorted(fullfiles, key=lambda i:i['info']['BIDS']['Filename'])
-    yy=fx.pop()
-    print(yy.info['BIDS']['Filename'])
-    yz=yy.get('info',{})       
+                    apfiles.append(file)
+                elif file.type=="nifti" and file.info['PhaseEncodingDirection']=='j' and "BIDS" in file.info.keys():
+                    pafiles.append(file)
+    apS=sorted(apfiles, key=lambda i:i['info']['BIDS']['Filename'])
+    paS=sorted(pafiles, key=lambda i:i['info']['BIDS']['Filename'])
+    ya=apS.pop()      
+    yaz=ya.get('info',{})
+    #print(yaz['BIDS']['Filename'])
+    yp=paS.pop()
+    ypz=yp.get('info',{})
+    #print(ypz['BIDS']['Filename'])
     
-if "IntendedFor" in yy.info:
-        yz['IntendedFor'].append(["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s])])
+    if "IntendedFor" in ya.info:
+        yaz['IntendedFor'].append(["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]),"sub-{}_ses-{}_task-rest_dir-PA_run-{}_bold.nii.gz".format(subs[s],sesslist[s],ya.info['BIDS']['Run'])])
+    elif "IntendedFor" not in ya.info:
+        yaz.update({'IntendedFor':["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]),"sub-{}_ses-{}_task-rest_dir-PA_run-{}_bold.nii.gz".format(subs[s],sesslist[s],ya.info['BIDS']['Run'])]})
+        ya.update_info(yaz)
+    elif "IntendedFor" in yp.info:
+        ypz['IntendedFor'].append(["func/{}_{}_task-gambling_dir-AP_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-AP_bold.nii.gz".format(subs[s],sesslist[s]),"sub-{}_ses-{}_task-rest_dir-AP_run-{}_bold.nii.gz"].format(subs[s],sesslist[s],yp.info['BIDS']['Run']),"sub-{}_ses-{}_task-rest_dir-AP_run-{}_bold.nii.gz".format(subs[s],sesslist[s],yp.info['BIDS']['Run']))
     else:
-        yz.update({'IntendedFor':["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s])]})
-    yy.update_info(yz)
-        if file.type=='nifti' and file.info['PhaseEncodingDirection']=='j-' and "BIDS" in file.info.keys():
-                fullfiles.append(file)
-                fx=sorted(fullfiles, key=lambda i:i['info']['BIDS']['Filename'])
-    
-    
-    
-    
-    if "IntendedFor" in file.info.keys():
-                        
-    else:
-                        
-                
-                
-  
+        ypz.update({'IntendedFor':["func/{}_{}_task-gambling_dir-AP_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-AP_bold.nii.gz".format(subs[s],sesslist[s]),"sub-{}_ses-{}_task-rest_dir-AP_run-{}_bold.nii.gz".format(subs[s],sesslist[s],yp.info['BIDS']['Run'])]})
+        yp.update_info(ypz)
+
+
 ######check fields
 for s in range(len(subs)):   
     sessPath='pennftdcenter/' + project + '/' + subs[s] + '/' + sesslist[s]
@@ -70,44 +70,12 @@ for s in range(len(subs)):
             acq=acq.reload()
             for file in acq.files:
                 if file.type=="nifti":
-                    yz=yy.get('info',{})
-    if "IntendedFor" in yy.info:
-        yz['IntendedFor'].append(["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s])])
-    else:
-        yz.update({'IntendedFor':["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s])]})
-    yy.update_info(yz)
-        if file.type=='nifti' and file.info['PhaseEncodingDirection']=='j-' and "BIDS" in file.info.keys():
-                fullfiles.append(file)
-                fx=sorted(fullfiles, key=lambda i:i['info']['BIDS']['Filename'])
-    yy=fx.pop()
-    print(yy.info['BIDS']['Filename'])
-    yz=yy.get('info',{})
-    if "IntendedFor" in yy.info:
-        yz['IntendedFor'].append(["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s])])
-    else:
-        yz.update({'IntendedFor':["func/{}_{}_task-gambling_dir-PA_bold.nii.gz".format(subs[s],sesslist[s]), "func/{}_{}_task-WM_dir-PA_bold.nii.gz".format(subs[s],sesslist[s])]})
-    yy.update_info(yz)
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    if "IntendedFor" in file.info.keys():
-                        print('yes', file.info['BIDS']['Filename'])
+                    yz=file.get('info',{})           
+                    if "IntendedFor" in file.info:
+                        print("yes",file.info['BIDS']['Filename'])
                     else:
-                        print('no',file.info['BIDS']['Filename'])
-                
-                         
-                
-                
-    
+                        print("no",file.info['BIDS']['Filename'])    
+                        
 
 #remove IF field
 for s in range(len(subs)):   
@@ -125,21 +93,8 @@ for s in range(len(subs)):
                         del(fdel['IntendedFor'])
                         file.update_info(fdel)
                     else:
-                        print('no',file.info['BIDS']['Filename'])
+                        print('no',file.info['BIDS']['Filename']
                         
                         
                         
-                        #print(file.info.keys())
-                        #file.update_info(file.info)
-                        print(file.info['IntendedFor'])
-                        
-                        
-                        
-filecheck = 'pennftdcenter/' + project + '/' + subs[s] + '/' + sesslist[s] 
-session=fw.lookup(filecheck)
-acqs=[a for a in session.acquisitions() if "SpinEchoFieldMap" in a.label]
-for acq in acqs:
-        acq=acq.reload()
-        for file in acq.files:
-            print(file.info.keys())
 
